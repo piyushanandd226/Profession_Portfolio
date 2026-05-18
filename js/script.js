@@ -30,7 +30,6 @@ function isMobileNav() {
 }
 
 const oldBtn = document.getElementById('hamburger');
-const navLinks = document.getElementById('nav-links');
 
 // 1. Clone the button to remove any broken/conflicting event listeners
 const newBtn = oldBtn.cloneNode(true);
