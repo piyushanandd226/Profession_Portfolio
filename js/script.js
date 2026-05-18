@@ -172,7 +172,47 @@ function initAll() {
       }
     });
   });
+js
+function initRevealAnimations() {
+  // 1. Setup the Observer
+  const observerOptions = {
+    threshold: 0.15, // Trigger when 15% of the element is visible
+    rootMargin: "0px 0px -50px 0px"
+  };
 
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        // Once it's revealed, we don't need to watch it anymore
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // 2. Automatically add 'reveal' class to sections
+  const sections = document.querySelectorAll('section');
+  sections.forEach((section) => {
+    // Skip the 'home' section if you want it visible immediately
+    if (section.id !== 'home') {
+      section.classList.add('reveal');
+      revealObserver.observe(section);
+    }
+  });
+
+  // 3. Staggered reveal for Experience Items
+  const experienceItems = document.querySelectorAll('.experience-item');
+  experienceItems.forEach((item, index) => {
+    item.classList.add('reveal');
+    // Add a delay based on the item's index for a "wave" effect
+    item.style.transitionDelay = `${(index % 3) * 0.15}s`; 
+    revealObserver.observe(item);
+  });
+}
+
+// Ensure this is called after React has rendered
+// (Put this inside your existing init() function)
+initRevealAnimations();
   // Run initial checks
   onWindowScroll();
 }
