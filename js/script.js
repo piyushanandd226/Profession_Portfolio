@@ -50,7 +50,7 @@ const newBtn = hamburger.cloneNode(true);
 oldBtn.parentNode.replaceChild(newBtn, hamburger);
 
 if (newBtn && navLinks) {
-  newBtn.addEventListener('click',  function(e) => {
+  newBtn.addEventListener('click',  function(e){
 	  e.preventDefault(); 
   	setMenuOpen(!navLinks.classList.contains('show'));
 	const isOpen = hamburger.getAttribute('aria-expanded') === 'true';
