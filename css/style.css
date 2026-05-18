@@ -302,6 +302,19 @@ header nav ul li a:hover {
   transform: translateY(-7px) rotate(-45deg);
 }
 
+/* Animation to X when expanded="true" */
+#hamburger[aria-expanded="true"] .bar-top {
+  transform: translateY(7px) rotate(45deg);
+}
+
+#hamburger[aria-expanded="true"] .bar-mid {
+  opacity: 0;
+}
+
+#hamburger[aria-expanded="true"] .bar-bot {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
 /* Hero section */
 .hero {
   padding: 140px 24px 88px;
