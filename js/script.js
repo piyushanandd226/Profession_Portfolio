@@ -30,11 +30,21 @@ function isMobileNav() {
 }
 
 
-React.createElement(
-  'ul',
-  { id: 'nav-links', className: isOpen ? 'show' : '' },
-  // ... links
-)
+// 1. Create the element
+const navLinksUl = document.createElement('ul');
+
+// 2. Set the ID and classes
+navLinksUl.id = 'nav-links';
+// Note: 'isOpen' must be defined (e.g., let isOpen = false;)
+if (typeof isOpen !== 'undefined' && isOpen) {
+  navLinksUl.classList.add('show');
+}
+
+// 3. Append to a parent container (e.g., a <nav> element)
+const navContainer = document.querySelector('nav');
+if (navContainer) {
+  navContainer.appendChild(navLinksUl);
+}
 
 
 /**
