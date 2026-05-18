@@ -28,48 +28,76 @@ function showToast(message) {
 function isMobileNav() {
   return window.matchMedia('(max-width: 768px)').matches;
 }
+// Inside your App or Nav component:
+const [isOpen, setIsOpen] = React.useState(false);
 
+const toggleMenu = () => setIsOpen(!isOpen);
+
+return React.createElement(
+  'button',
+  { 
+    type: 'button', 
+    className: `hamburger ${isOpen ? 'is-open' : ''}`, // Adds class for the "X"
+    id: 'hamburger',
+    onClick: toggleMenu, // <-- ADD THIS
+    'aria-expanded': isOpen ? 'true' : 'false',
+    'aria-controls': 'nav-links'
+  },
+  // ...
+);
+React.createElement(
+  'ul',
+  { id: 'nav-links', className: isOpen ? 'show' : '' },
+  // ... links
+)
+
+
+/**
+ * Main function to control the menu state
+ * @param {boolean} open - Whether to open or close the menu
+ */
 function setMenuOpen(open) {
-  if (hamburger) {
-    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
-    hamburger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    hamburger.classList.toggle('is-open', open);
-  }
-  if (navLinks) {
-    navLinks.classList.toggle('show', open);
-  }
+  if (!hamburger || !navLinks) return;
+
+  // 1. Update button attributes and animation class
+  hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  hamburger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  hamburger.classList.toggle('is-open', open);
+
+  // 2. Toggle the menu visibility class
+  navLinks.classList.toggle('show', open);
+
+  // 3. Optional: Handle backdrop if it exists
   if (navBackdrop) {
-    const useBackdrop = Boolean(open) && isMobileNav();
-    navBackdrop.classList.toggle('is-visible', useBackdrop);
-    navBackdrop.setAttribute('aria-hidden', useBackdrop ? 'false' : 'true');
+    navBackdrop.classList.toggle('is-visible', open && isMobileNav());
   }
-  document.body.classList.toggle('menu-open', Boolean(open) && isMobileNav());
+
+  // 4. Prevent scrolling on the body when menu is open (mobile only)
+  document.body.classList.toggle('menu-open', open && isMobileNav());
 }
 
-if (hamburger && navLinks) {
-  hamburger.addEventListener('click', () => {
-  	setMenuOpen(!navLinks.classList.contains('show'));
-	const isOpen = hamburger.getAttribute('aria-expanded') === 'true';
-    hamburger.setAttribute('aria-expanded', !isOpen);
-	navMenu.style.display = isOpen ? 'none' : 'block';
-  });
-}
+// Event Listener: Toggle menu on hamburger click
+hamburger.addEventListener('click', () => {
+  const isCurrentlyOpen = navLinks.classList.contains('show');
+  setMenuOpen(!isCurrentlyOpen);
+});
 
-navBackdrop?.addEventListener('click', () => setMenuOpen(false));
-
+// Event Listener: Close menu when clicking a navigation link
 document.querySelectorAll('#nav-links a').forEach((link) => {
   link.addEventListener('click', () => setMenuOpen(false));
 });
 
+// Event Listener: Close menu on 'Escape' key press
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && navLinks?.classList.contains('show')) {
+  if (e.key === 'Escape' && navLinks.classList.contains('show')) {
     setMenuOpen(false);
-    hamburger?.focus();
+    hamburger.focus();
   }
 });
 
+// Event Listener: Close menu if window is resized beyond mobile width
 window.addEventListener('resize', () => {
-  if (!isMobileNav()) {
+  if (!isMobileNav() && navLinks.classList.contains('show')) {
     setMenuOpen(false);
   }
 });
