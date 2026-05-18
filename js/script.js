@@ -48,12 +48,11 @@ function setMenuOpen(open) {
 
 if (hamburger && navLinks) {
   hamburger.addEventListener('click', () => {
-  	setMenuOpen(!navLinks.classList.contains('show'));
-	const isOpen = hamburger.getAttribute('aria-expanded') === 'true';
-    hamburger.setAttribute('aria-expanded', !isOpen);
-	navMenu.style.display = isOpen ? 'none' : 'block';
+    const isOpen = navLinks.classList.contains('show');
+    setMenuOpen(!isOpen);
   });
 }
+
 
 navBackdrop?.addEventListener('click', () => setMenuOpen(false));
 
