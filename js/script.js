@@ -29,6 +29,30 @@ function isMobileNav() {
   return window.matchMedia('(max-width: 768px)').matches;
 }
 
+const oldBtn = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
+
+// 1. Clone the button to remove any broken/conflicting event listeners
+const newBtn = oldBtn.cloneNode(true);
+oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+
+newBtn.addEventListener('click', function(e) {
+  e.preventDefault();
+  
+  // Toggle the attribute
+  const isExpanded = this.getAttribute('aria-expanded') === 'true';
+  const nextState = !isExpanded;
+  this.setAttribute('aria-expanded', String(nextState));
+  
+  // Toggle the menu visibility directly
+  if (navLinks) {
+    navLinks.style.setProperty('display', nextState ? 'block' : 'none', 'important');
+  }
+  
+  // Optional: Toggle a class on the body for global styling
+  document.body.classList.toggle('menu-open', nextState);
+});
+  
 function setMenuOpen(open) {
   if (hamburger) {
     hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
