@@ -205,7 +205,7 @@ function initRevealAnimations() {
   experienceItems.forEach((item, index) => {
     item.classList.add('reveal');
     // Add a delay based on the item's index for a "wave" effect
-    item.style.transitionDelay = `${(index % 3) * 0.15}s`; 
+    item.style.transitionDelay = `${(index % 3) * 0.05}s`; 
     revealObserver.observe(item);
   });
 }
