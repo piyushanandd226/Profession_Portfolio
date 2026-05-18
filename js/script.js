@@ -1,396 +1,294 @@
-// =====================================
-// DOM Elements
-// =====================================
-
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('nav-links');
+const navBackdrop = document.getElementById('nav-backdrop');
 const scrollProgressBar = document.getElementById('scroll-progress-bar');
 const backToTop = document.getElementById('back-to-top');
-
-const prefersReducedMotion = window.matchMedia(
-  '(prefers-reduced-motion: reduce)'
-).matches;
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const toastEl = document.getElementById('toast');
-
-let toastTimer = null;
-
-
-// =====================================
-// Toast Notification
-// =====================================
+let toastTimer;
 
 function showToast(message) {
-
   if (!toastEl) return;
-
-  clearTimeout(toastTimer);
-
+  window.clearTimeout(toastTimer);
   toastEl.textContent = message;
-
   toastEl.hidden = false;
-
   requestAnimationFrame(() => {
     toastEl.classList.add('is-visible');
   });
-
-  toastTimer = setTimeout(() => {
-
+  toastTimer = window.setTimeout(() => {
     toastEl.classList.remove('is-visible');
-
-    setTimeout(() => {
-
+    window.setTimeout(() => {
       toastEl.hidden = true;
       toastEl.textContent = '';
-
-    }, 300);
-
-  }, 2500);
+    }, 320);
+  }, 2600);
 }
 
+function isMobileNav() {
+  return window.matchMedia('(max-width: 768px)').matches;
+}
 
-// =====================================
-// Skip Link Accessibility
-// =====================================
+function setMenuOpen(open) {
+  if (hamburger) {
+    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    hamburger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    hamburger.classList.toggle('is-open', open);
+  }
+  if (navLinks) {
+    navLinks.classList.toggle('show', open);
+  }
+  if (navBackdrop) {
+    const useBackdrop = Boolean(open) && isMobileNav();
+    navBackdrop.classList.toggle('is-visible', useBackdrop);
+    navBackdrop.setAttribute('aria-hidden', useBackdrop ? 'false' : 'true');
+  }
+  document.body.classList.toggle('menu-open', Boolean(open) && isMobileNav());
+}
 
-document
-  .querySelector('.skip-link')
-  ?.addEventListener('click', () => {
-
-    requestAnimationFrame(() => {
-
-      const main = document.getElementById('main-content');
-
-      if (main) {
-        main.focus({ preventScroll: true });
-      }
-    });
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+  	setMenuOpen(!navLinks.classList.contains('show'));
+	const isOpen = hamburger.getAttribute('aria-expanded') === 'true';
+    hamburger.setAttribute('aria-expanded', !isOpen);
+	navMenu.style.display = isOpen ? 'none' : 'block';
   });
+}
 
+navBackdrop?.addEventListener('click', () => setMenuOpen(false));
 
-// =====================================
-// Smooth Scrolling
-// =====================================
+document.querySelectorAll('#nav-links a').forEach((link) => {
+  link.addEventListener('click', () => setMenuOpen(false));
+});
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && navLinks?.classList.contains('show')) {
+    setMenuOpen(false);
+    hamburger?.focus();
+  }
+});
 
-  anchor.addEventListener('click', function (e) {
+window.addEventListener('resize', () => {
+  if (!isMobileNav()) {
+    setMenuOpen(false);
+  }
+});
 
-    const href = this.getAttribute('href');
-
-    if (!href || href === '#') return;
-
-    const target = document.querySelector(href);
-
-    if (!target) return;
-
-    e.preventDefault();
-
-    target.scrollIntoView({
-      behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      block: 'start'
-    });
+document.querySelector('.skip-link')?.addEventListener('click', () => {
+  window.requestAnimationFrame(() => {
+    const main = document.getElementById('main-content');
+    if (main) main.focus({ preventScroll: true });
   });
 });
 
-
-// =====================================
-// Header + Navigation
-// =====================================
-
-const header = document.querySelector('header');
-
-const sections = document.querySelectorAll('section[id]');
-
-const navItems = document.querySelectorAll('#nav-links a');
-
-let lastScrollTop = 0;
-
-function updateActiveNav() {
-
-  let current = 'home';
-
-  const scrollPosition = window.scrollY + 120;
-
-  sections.forEach(section => {
-
-    if (scrollPosition >= section.offsetTop) {
-      current = section.id;
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+  anchor.addEventListener('click', function (e) {
+    const href = this.getAttribute('href');
+    if (!href || href === '#') return;
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
     }
   });
+});
 
-  navItems.forEach(item => {
+let lastScrollTop = 0;
+const header = document.querySelector('header');
+const sections = document.querySelectorAll('section');
+const navItems = document.querySelectorAll('header nav ul li a');
 
+let progressRaf = 0;
+const updateScrollProgress = () => {
+  progressRaf = 0;
+  if (!scrollProgressBar) return;
+  const doc = document.documentElement;
+  const scrollable = doc.scrollHeight - doc.clientHeight;
+  const p = scrollable > 0 ? window.scrollY / scrollable : 0;
+  scrollProgressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, p))})`;
+};
+
+function updateActiveNav() {
+  const headerOffset = 110;
+  const scrollPos = window.scrollY + headerOffset;
+  let current = 'home';
+  const list = Array.from(sections);
+
+  for (let i = list.length - 1; i >= 0; i -= 1) {
+    const section = list[i];
+    const id = section.getAttribute('id');
+    if (!id) continue;
+    if (scrollPos >= section.offsetTop) {
+      current = id;
+      break;
+    }
+  }
+
+  navItems.forEach((item) => {
     item.classList.remove('active');
     item.removeAttribute('aria-current');
-
     const href = item.getAttribute('href');
-
-    if (href === `#${current}`) {
-
+    if (href && href.startsWith('#') && href.slice(1) === current) {
       item.classList.add('active');
-
       item.setAttribute('aria-current', 'page');
     }
   });
 }
 
+let scrollTicking = false;
+function onWindowScroll() {
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-// =====================================
-// Scroll Progress
-// =====================================
-
-function updateScrollProgress() {
-
-  if (!scrollProgressBar) return;
-
-  const doc = document.documentElement;
-
-  const scrollableHeight =
-    doc.scrollHeight - doc.clientHeight;
-
-  const progress =
-    scrollableHeight > 0
-      ? window.scrollY / scrollableHeight
-      : 0;
-
-  scrollProgressBar.style.transform =
-    `scaleX(${progress})`;
-}
-
-
-// =====================================
-// Scroll Handler
-// =====================================
-
-function handleScroll() {
-
-  const scrollTop =
-    window.pageYOffset ||
-    document.documentElement.scrollTop;
-
-  // Header animation
   if (header) {
-
-    if (
-      !prefersReducedMotion &&
-      scrollTop > lastScrollTop &&
-      scrollTop > 100
-    ) {
-
+    if (!prefersReducedMotion && scrollTop > lastScrollTop && scrollTop > 100) {
       header.style.transform = 'translateY(-100%)';
-
     } else {
-
       header.style.transform = 'translateY(0)';
     }
 
-    // Header shadow
     if (scrollTop > 50) {
-
-      header.classList.add('scrolled');
-
+      header.style.background = 'rgba(255, 255, 255, 0.96)';
+      header.style.boxShadow = '0 8px 30px rgba(15, 23, 42, 0.08)';
     } else {
-
-      header.classList.remove('scrolled');
+      header.style.background = '';
+      header.style.boxShadow = '';
     }
   }
 
-  lastScrollTop = Math.max(scrollTop, 0);
+  lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
 
-  updateScrollProgress();
+  if (!progressRaf) {
+    progressRaf = window.requestAnimationFrame(updateScrollProgress);
+  }
 
   updateActiveNav();
 
-  // Back to top button
   if (backToTop) {
-
-    const visible = scrollTop > 400;
-
-    backToTop.classList.toggle(
-      'is-visible',
-      visible
-    );
-
-    backToTop.hidden = !visible;
+    const show = scrollTop > 420;
+    backToTop.classList.toggle('is-visible', show);
+    backToTop.hidden = !show;
   }
+
+  scrollTicking = false;
 }
 
 window.addEventListener('scroll', () => {
-  requestAnimationFrame(handleScroll);
+  if (!scrollTicking) {
+    scrollTicking = true;
+    window.requestAnimationFrame(onWindowScroll);
+  }
 });
-
-handleScroll();
-
-
-// =====================================
-// Back To Top
-// =====================================
+onWindowScroll();
+updateScrollProgress();
 
 backToTop?.addEventListener('click', () => {
-
-  window.scrollTo({
-    top: 0,
-    behavior: prefersReducedMotion
-      ? 'auto'
-      : 'smooth'
-  });
+  const home = document.getElementById('home');
+  if (home) {
+    home.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
+  } else {
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+  }
 });
 
-
-// =====================================
-// Copy Buttons
-// =====================================
-
-document.querySelectorAll('.copy-btn').forEach(btn => {
-
+document.querySelectorAll('.copy-btn').forEach((btn) => {
   btn.addEventListener('click', async () => {
-
-    const text = btn.dataset.copy;
-
+    const text = btn.getAttribute('data-copy');
     if (!text) return;
-
     try {
-
       await navigator.clipboard.writeText(text);
-
-      showToast('Copied to clipboard');
-
+      showToast('Email copied to clipboard.');
     } catch {
-
-      showToast('Clipboard not supported');
+      showToast('Copy not supported in this browser.');
     }
   });
 });
 
-
-// =====================================
-// Reveal Animations
-// =====================================
-
 const observerOptions = {
   threshold: 0.12,
-  rootMargin: '0px 0px -40px 0px'
+  rootMargin: '0px 0px -40px 0px',
 };
 
-function revealOnScroll(targets, stagger = 0) {
-
+function revealOnScroll(targets, staggerMs = 0) {
   if (prefersReducedMotion) {
-
-    targets.forEach(el => {
-
+    targets.forEach((el) => {
       el.style.opacity = '1';
       el.style.transform = 'none';
     });
-
     return;
   }
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-
-      entries.forEach(entry => {
-
-        if (entry.isIntersecting) {
-
-          entry.target.style.opacity = '1';
-
-          entry.target.style.transform =
-            'translateY(0)';
-        }
-      });
-
-    },
-    observerOptions
-  );
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
 
   targets.forEach((el, index) => {
-
     el.style.opacity = '0';
-
-    el.style.transform =
-      'translateY(30px)';
-
-    el.style.transition =
-      `all 0.6s ease ${index * stagger}s`;
-
-    observer.observe(el);
+    el.style.transform = 'translateY(28px)';
+    el.style.transition = `opacity 0.65s ease-out ${index * staggerMs}s, transform 0.65s ease-out ${index * staggerMs}s`;
+    io.observe(el);
   });
 }
 
-revealOnScroll(
-  document.querySelectorAll('section'),
-  0
-);
+revealOnScroll(document.querySelectorAll('section'), 0);
+revealOnScroll(document.querySelectorAll('.experience-item'), 0.08);
 
-revealOnScroll(
-  document.querySelectorAll('.experience-item'),
-  0.08
-);
+const filterButtons = document.querySelectorAll('.filter-btn');
+const projectCards = document.querySelectorAll('.project-card');
+const projectEmpty = document.getElementById('project-empty');
+const projectLive = document.getElementById('project-live');
 
-
-// =====================================
-// Project Filters
-// =====================================
-
-const filterButtons =
-  document.querySelectorAll('.filter-btn');
-
-const projectCards =
-  document.querySelectorAll('.project-card');
-
-const projectEmpty =
-  document.getElementById('project-empty');
-
-const projectLive =
-  document.getElementById('project-live');
+const filterLabels = {
+  all: 'All',
+  backend: 'Backend',
+  cloud: 'Cloud',
+  data: 'Data',
+};
 
 function applyProjectFilter(button) {
-
-  filterButtons.forEach(btn => {
-
+  filterButtons.forEach((btn) => {
     btn.classList.remove('active');
-
     btn.setAttribute('aria-pressed', 'false');
   });
-
   button.classList.add('active');
-
   button.setAttribute('aria-pressed', 'true');
 
-  const filter =
-    button.dataset.filter || 'all';
-
+  const filter = (button.dataset.filter || 'all').toLowerCase();
   let visibleCount = 0;
 
-  projectCards.forEach(card => {
-
-    const categories =
-      (card.dataset.categories || '')
-        .toLowerCase()
-        .split(' ');
-
-    const visible =
-      filter === 'all' ||
-      categories.includes(filter);
-
-    card.hidden = !visible;
-
-    if (visible) visibleCount++;
+  projectCards.forEach((card) => {
+    const raw = card.getAttribute('data-categories') || '';
+    const categories = raw.toLowerCase().split(/\s+/).filter(Boolean);
+    const visible = filter === 'all' || categories.includes(filter);
+    card.toggleAttribute('hidden', !visible);
+    if (visible) visibleCount += 1;
   });
 
   if (projectEmpty) {
     projectEmpty.hidden = visibleCount > 0;
   }
 
-  if (projectLive) {
+  const label = filterLabels[filter] || filter;
+  const msg =
+    filter === 'all'
+      ? `Showing all ${visibleCount} projects.`
+      : visibleCount === 0
+        ? 'No projects match this filter.'
+        : `${visibleCount} project${visibleCount === 1 ? '' : 's'} tagged ${label}.`;
 
-    projectLive.textContent =
-      `Showing ${visibleCount} project${visibleCount !== 1 ? 's' : ''}`;
+  if (projectLive) projectLive.textContent = msg;
+  if (visibleCount === 0) {
+    showToast('No projects match this filter.');
   }
 }
 
-filterButtons.forEach(button => {
-
-  button.addEventListener('click', () => {
-    applyProjectFilter(button);
-  });
+filterButtons.forEach((button) => {
+  button.addEventListener('click', () => applyProjectFilter(button));
 });
