@@ -20,7 +20,7 @@ function App() {
         React.createElement(
           'button',
           { type: 'button', className: 'hamburger', id: 'hamburger', 'aria-label': 'Open menu', 'aria-expanded': 'false', 'aria-controls': 'nav-links' },
-          React.createElement('span', { className: 'hamburger-box', 'aria-hidden': 'true' },
+            React.createElement('span', { className: 'hamburger-box', 'aria-hidden': 'true' },
             React.createElement('span', { className: 'hamburger-bar' }),
             React.createElement('span', { className: 'hamburger-bar' }),
             React.createElement('span', { className: 'hamburger-bar' })
