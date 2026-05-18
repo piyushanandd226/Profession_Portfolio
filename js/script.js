@@ -28,23 +28,8 @@ function showToast(message) {
 function isMobileNav() {
   return window.matchMedia('(max-width: 768px)').matches;
 }
-// Inside your App or Nav component:
-const [isOpen, setIsOpen] = React.useState(false);
 
-const toggleMenu = () => setIsOpen(!isOpen);
 
-return React.createElement(
-  'button',
-  { 
-    type: 'button', 
-    className: `hamburger ${isOpen ? 'is-open' : ''}`, // Adds class for the "X"
-    id: 'hamburger',
-    onClick: toggleMenu, // <-- ADD THIS
-    'aria-expanded': isOpen ? 'true' : 'false',
-    'aria-controls': 'nav-links'
-  },
-  // ...
-);
 React.createElement(
   'ul',
   { id: 'nav-links', className: isOpen ? 'show' : '' },
@@ -76,6 +61,11 @@ function setMenuOpen(open) {
   document.body.classList.toggle('menu-open', open && isMobileNav());
 }
 
+// Keep this part!
+hamburger.addEventListener('click', () => {
+  const isCurrentlyOpen = navLinks.classList.contains('show');
+  setMenuOpen(!isCurrentlyOpen);
+});
 // Event Listener: Toggle menu on hamburger click
 hamburger.addEventListener('click', () => {
   const isCurrentlyOpen = navLinks.classList.contains('show');
