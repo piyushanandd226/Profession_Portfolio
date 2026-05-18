@@ -1564,8 +1564,8 @@ footer p {
   }
 
   #nav-links.show {
-    display: flex;
-  }
+      display: flex !important;
+}
 
   .nav-actions {
     display: none;
