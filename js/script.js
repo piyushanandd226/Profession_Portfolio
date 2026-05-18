@@ -205,11 +205,32 @@ function initRevealAnimations() {
   experienceItems.forEach((item, index) => {
     item.classList.add('reveal');
     // Add a delay based on the item's index for a "wave" effect
-    item.style.transitionDelay = `${(index % 3) * 0.15}s`; 
+    item.style.transitionDelay = `${(index % 3) * 0.05}s`; 
     revealObserver.observe(item);
   });
 }
+js
+function initThemeSwitcher() {
+  const toggleBtn = document.getElementById('theme-toggle');
+  const currentTheme = localStorage.getItem('theme') || 'light';
 
+  // 1. Set initial theme
+  document.documentElement.setAttribute('data-theme', currentTheme);
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      let theme = document.documentElement.getAttribute('data-theme');
+      let newTheme = theme === 'light' ? 'dark' : 'light';
+      
+      // 2. Update DOM and LocalStorage
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    });
+  }
+}
+
+// Call this inside your init()
+initThemeSwitcher();
 // Ensure this is called after React has rendered
 // (Put this inside your existing init() function)
 initRevealAnimations();
