@@ -29,28 +29,6 @@ function isMobileNav() {
   return window.matchMedia('(max-width: 768px)').matches;
 }
 
-const oldBtn = document.getElementById('hamburger');
-
-// 1. Clone the button to remove any broken/conflicting event listeners
-const newBtn = oldBtn.cloneNode(true);
-oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-
-newBtn.addEventListener('click', function(e) {
-  e.preventDefault();
-  
-  // Toggle the attribute
-  const isExpanded = this.getAttribute('aria-expanded') === 'true';
-  const nextState = !isExpanded;
-  this.setAttribute('aria-expanded', String(nextState));
-  
-  // Toggle the menu visibility directly
-  if (navLinks) {
-    navLinks.style.setProperty('display', nextState ? 'block' : 'none', 'important');
-  }
-  
-  // Optional: Toggle a class on the body for global styling
-  document.body.classList.toggle('menu-open', nextState);
-});
   
 function setMenuOpen(open) {
   if (hamburger) {
@@ -68,13 +46,20 @@ function setMenuOpen(open) {
   }
   document.body.classList.toggle('menu-open', Boolean(open) && isMobileNav());
 }
+const newBtn = hamburger.cloneNode(true);
+oldBtn.parentNode.replaceChild(newBtn, hamburger);
 
-if (hamburger && navLinks) {
-  hamburger.addEventListener('click', () => {
+if (newBtn && navLinks) {
+  newBtn.addEventListener('click',  function(e) => {
+	  e.preventDefault(); 
   	setMenuOpen(!navLinks.classList.contains('show'));
 	const isOpen = hamburger.getAttribute('aria-expanded') === 'true';
-    hamburger.setAttribute('aria-expanded', !isOpen);
-	navMenu.style.display = isOpen ? 'none' : 'block';
+   const nextState = !isExpanded;
+     this.setAttribute('aria-expanded', String(nextState));  
+	   if (navLinks) {
+    navLinks.style.setProperty('display', nextState ? 'block' : 'none', 'important');
+  }
+    document.body.classList.toggle('menu-open', nextState);
   });
 }
 
