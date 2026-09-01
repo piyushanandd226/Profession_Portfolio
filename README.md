@@ -56,10 +56,11 @@ piyushanand226.github.io/
 ---
 
 ## 📧 Contact
-- Email: [piyushanandbang@gmail.com](mailto:piyushanandbang@gmail.com)  
-- Phone: [+91 82105 86660](tel:+918210586660)  
-- LinkedIn: [linkedin.com/in/piyushanand](https://linkedin.com/in/piyushanand)  
-- GitHub: [github.com/piyushanand](https://github.com/piyushanand)
+- Email: [kumaranandpiyush5@gmail.com](mailto:kumaranandpiyush5@gmail.com)  
+- Phone: [+91 9916385146](tel:+9916385146)  
+- LinkedIn: [linkedin.com/in/piyush-kumar-anand-096959355/](https://www.linkedin.com/in/piyush-kumar-anand-096959355/)  
+- GitHub: [github.com/piyushanand226](https://piyushanand226.github.io/)
+
 
 ---
 
