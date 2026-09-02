@@ -2,6 +2,11 @@ import React from 'https://esm.sh/react@18.3.1'
 import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client'
 import '../js/script.js'
 
+// Let Vite publish these files and generate URLs that include the configured base path.
+// Literal runtime paths are not copied into the production build.
+const resumeUrl = new URL('../asset/resume.pdf', import.meta.url).href
+const profilePhotoUrl = new URL('../asset/profile.png', import.meta.url).href
+
 function App() {
   return React.createElement(
     React.Fragment,
@@ -35,7 +40,7 @@ function App() {
           React.createElement('li', null, React.createElement('a', { href: '#contact' }, 'Contact'))
         ),
         React.createElement('div', { className: 'nav-actions' },
-          React.createElement('a', { href: 'asset/resume.pdf', className: 'nav-btn', download: true }, 'Resume')
+          React.createElement('a', { href: resumeUrl, className: 'nav-btn', download: true }, 'Resume')
         )
       )
     ),
@@ -47,12 +52,12 @@ function App() {
             React.createElement('h1', null, 'Piyush Kumar Anand'),
             React.createElement('p', null, 'Java • Spring Boot • Kafka • Reactive Systems • Cloud-Native Architecture'),
             React.createElement('div', { className: 'hero-actions' },
-              React.createElement('a', { href: 'asset/resume.pdf', className: 'btn btn-primary', download: 'Piyush_Kumar_Anand_Resume.pdf' }, 'Download Resume'),
+              React.createElement('a', { href: resumeUrl, className: 'btn btn-primary', download: 'Piyush_Kumar_Anand_Resume.pdf' }, 'Download Resume'),
               React.createElement('a', { href: '#projects', className: 'btn btn-secondary' }, 'View Projects')
             )
           ),
           React.createElement('div', { className: 'hero-panel' },
-            React.createElement('img', { src: 'asset/profile.png', alt: 'Piyush Kumar Anand', className: 'profile-photo', width: '240', height: '240', decoding: 'async', fetchpriority: 'high' })
+            React.createElement('img', { src: profilePhotoUrl, alt: 'Piyush Kumar Anand', className: 'profile-photo', width: '240', height: '240', decoding: 'async', fetchpriority: 'high' })
           )
         )
       ),

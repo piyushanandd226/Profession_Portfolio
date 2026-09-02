@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test'
 
+test('profile picture is included in the production build and loads successfully', async ({ page }) => {
+  await page.goto('/')
+
+  const profilePhoto = page.getByAltText('Piyush Kumar Anand')
+  await expect(profilePhoto).toBeVisible()
+  await expect(profilePhoto).toHaveJSProperty('complete', true)
+  await expect(profilePhoto).not.toHaveJSProperty('naturalWidth', 0)
+})
+
 test('mobile hamburger opens/closes nav and supports back-to-top', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'This test validates mobile navigation behavior only.')
 
